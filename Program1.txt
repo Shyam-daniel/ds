@@ -1,0 +1,59 @@
+1.Write a program to implement decision trees using any data sets
+#ID3vCART
+
+import pandas as pd
+import sklearn.metrics as met
+from sklearn.tree import DecisionTreeClassifier
+from sklearn import preprocessing
+from sklearn.model_selection import train_test_split
+
+cancer = pd.read_csv('breast-cancer.data', sep=',')
+df = pd.DataFrame(cancer)
+print(df.head())
+
+le = preprocessing.LabelEncoder()
+id3 = DecisionTreeClassifier(criterion = 'entropy')
+cart = DecisionTreeClassifier(criterion = 'gini')
+
+X = df.iloc[:,:-1].values
+Y = df.iloc[:,-1].values
+for i in range(9):
+    le.fit(list(set(df.iloc[:,i].values)))
+    a=[]
+    for j in range(len(X)):
+        a.append(X[j][i])
+    a = le.transform(a)
+    for j in range(len(X)):
+        X[j][i] = a[j]
+        
+le.fit(list(set(df.iloc[:,-1].values)))
+a=[]
+for j in range(len(Y)):
+    a.append(Y[j])
+a = le.transform(a)    
+for j in range(len(Y)):
+    Y[j] = a[j]
+Y = Y.astype('int')
+print(X)
+print(Y)
+Xtrain, Xtest, Ytrain, Ytest = train_test_split(X, Y, test_size = int(0.1*len(Y)), random_state=1)
+print(Xtrain)
+print(Ytrain)
+
+id3_mod = id3.fit(Xtrain, Ytrain)
+cart_mod = cart.fit(Xtrain, Ytrain)
+Ypred_id3 = id3_mod.predict(Xtest)
+Ypred_cart = cart_mod.predict(Xtest)
+
+print("Acc=",met.accuracy_score(Ytest,Ypred_id3))
+print("Inacc=",1-met.accuracy_score(Ytest,Ypred_id3))
+print("Precision=",met.precision_score(Ytest,Ypred_id3))
+print("Fmeasure=",met.f1_score(Ytest,Ypred_id3))
+print("Recall=",met.recall_score(Ytest,Ypred_id3))
+
+print("Acc=",met.accuracy_score(Ytest,Ypred_cart))
+print("Inacc=",1-met.accuracy_score(Ytest,Ypred_cart))
+print("Precision=",met.precision_score(Ytest,Ypred_cart))
+print("Fmeasure=",met.f1_score(Ytest,Ypred_cart))
+print("Recall=",met.recall_score(Ytest,Ypred_cart))
+

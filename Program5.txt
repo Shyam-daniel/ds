@@ -1,0 +1,41 @@
+5. Data analytics: write a program that transposes the original data set, find all pairs
+   products reviewed together; Writes on the output folder all the pairs of products
+   that appear more than once and their frequencies. The pairs of products must be
+   sorted by frequency.
+
+#KNN
+
+from sklearn.neighbors import KNeighborsClassifier 
+from sklearn.model_selection import train_test_split
+from sklearn import preprocessing
+import pandas as pd
+import sklearn.metrics as met
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+from sklearn.metrics import accuracy_score
+
+
+df = pd.read_csv("iris.csv") 
+df.head()
+
+names = ['Sepal_Length', ' Sepal_Width', ' Petal_Length', ' Petal_Width']
+x = df[names].values
+y = df['Class'].values
+
+le = preprocessing.LabelEncoder()
+y = le.fit_transform(y)
+
+X_train,X_test,y_train,y_test = train_test_split(x,y,random_state=0,test_size=0.25)
+classifier = KNeighborsClassifier(n_neighbors=8,p=3,metric='euclidean')
+classifier.fit(X_train,y_train)
+
+#predict the test resuts
+y_pred=classifier.predict(X_test)
+
+cm=confusion_matrix(y_test,y_pred) 
+print('Confusion matrix is as follows\n',cm) 
+print('Accuracy Metrics') 
+print(classification_report(y_test,y_pred))
+print(" correct predicition",accuracy_score(y_test,y_pred)) 
+print(" wrong predicition",(1-accuracy_score(y_test,y_pred)))
+
